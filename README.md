@@ -77,15 +77,40 @@ Authorization: Token abc123
   "result": "Success",
   "data": [
     {
-      "client": "DEMOCLIENT",
+      "code": "SKU001",
       "item_type": "STANDARD",
       "product_name": "Sample Product",
-      "item_code": "SKU001",
       "description": "Product description",
-      "active": true,
-      "group_name": "RAW_MATERIAL",
-      "unit": "EACH",
-      "stock": 1000
+      "upc": "123456789012",
+      "expiry_date_control": "BOTH",
+      "lot_control": "DISABLE",
+      "serial_number_control": "DISABLE",
+      "remark": "Internal remark",
+      "required_condition": "AMBIENT",
+      "is_condition_force": true,
+      "pick_method": "FEFO",
+      "hs_code": "1234.56.78",
+      "custom_code": "CUST-SKU001",
+      "pick_size": 1,
+      "pack_size": 12,
+      "uom": [
+        {
+          "unit": "EACH",
+          "qty": 1,
+          "is_base": true,
+          "length": 0,
+          "width": 0,
+          "height": 0,
+          "gross_weight": 0.25,
+          "net_weight": 0.2
+        }
+      ],
+      "custom_field": [
+        {
+          "name": "color",
+          "value": "red"
+        }
+      ]
     }
   ],
   "error": null
@@ -108,12 +133,10 @@ Authorization: Token abc123
 | ----------------------------------- | ------- | -------- | ---------------------------------------------------------------------------------------------------- |
 | `client` / `client_code`           | string  | **Yes**  | Client code. Must exist under the token's organization.                                             |
 | `item_type`                        | string  | **Yes**  | Item type code. Must exist in system (e.g., STANDARD).                                              |
-| `product_name`                     | string  | **Yes**  | Product display name.                                                                               |
+| `product_name`                     | string  | **Yes**  | Product display name. (Material name)                                                               |
 | `item_code` / `code`               | string  | **Yes**  | SKU/item code. Must be unique per client.                                                           |
 | `description`                      | string  | No       | Product description.                                                                                |
 | `upc`                              | string  | No       | UPC/barcode.                                                                                        |
-| `foreign_name`                     | string  | No       | Foreign language name.                                                                              |
-| `group_name`                       | string  | No       | Product grouping name (category).                                                                   |
 | `remark`                           | string  | No       | Internal remark.                                                                                    |
 | `auom_control`                     | string  | No       | Alternative UOM control. Allowed: `DISABLE`, `IN`, `OUT`, `BOTH`. Default: `DISABLE`.               |
 | `expiry_date_control`             | string  | No       | Expiry date control. Allowed: `DISABLE`, `OUT`, `BOTH`. Default: `DISABLE`.                         |
@@ -124,19 +147,8 @@ Authorization: Token abc123
 | `picking_method`                  | string  | No       | `FIFO`, `FEFO`, or `LIFO`. Default: `FEFO` if expiry control enabled, else `FIFO`.                  |
 | `hs_code`                          | string  | No       | Harmonized System code.                                                                            |
 | `custom_code`                      | string  | No       | Custom/customer reference code.                                                                     |
-| `pick_size`                        | integer | No       | Pick size. Default: `0`.                                                                            |
-| `pack_size`                        | integer | No       | Pack size. Default: `0`.                                                                            |
-| `stock`                            | number  | No       | Stock quantity value. Default: `0`.                                                                 |
-| `shelf_life`                      | integer | No       | Shelf life value (days). Default: `0`.                                                              |
-| `pack_description`                | string  | No       | Pack description text.                                                                              |
-| `team`                             | string  | No       | Team name/value.                                                                                    |
-| `brand`                            | string  | No       | Brand name.                                                                                         |
-| `business_partner_code`           | string  | No       | Business partner code.                                                                              |
-| `business_partner_name`           | string  | No       | Business partner name.                                                                              |
-| `place_of_origin`                 | string  | No       | Place of origin.                                                                                    |
-| `container_type`                  | string  | No       | Container type.                                                                                     |
-| `wight_per_each`                  | number  | No       | Weight per each item. Default: `0`.                                                                 |
-| `weight_unit`                     | string  | No       | Weight unit (e.g., `kg`, `g`).                                                                      |
+| `pick_size`                        | integer | No       | Pick size. Default: `1`.                                                                            |
+| `pack_size`                        | integer | No       | Pack size. Default: `1`.                                                                            |
 | `cost`                             | number  | No       | Cost price. Default: `0`.                                                                           |
 | `selling`                          | number  | No       | Selling price. Default: `0`.                                                                        |
 | `msrp`                             | number  | No       | MSRP. Default: `0`.                                                                                 |
@@ -173,24 +185,60 @@ Authorization: Token abc123
 Content-Type: application/json
 
 {
-  "client": "DEMOCLIENT",
+  "client_code": "DEMOCLIENT",
   "item_type": "STANDARD",
   "product_name": "Sample Product",
   "item_code": "SKU001",
   "description": "Product description",
   "upc": "123456789012",
-  "group_name": "RAW_MATERIAL",
+  "remark": "Internal remark for SKU001",
+  "auom_control": "DISABLE",
   "expiry_date_control": "BOTH",
+  "lot_control": "DISABLE",
+  "serial_number_control": "DISABLE",
+  "required_condition": "AMBIENT",
+  "force_required_condition": false,
   "picking_method": "FEFO",
+  "hs_code": "1234.56.78",
+  "custom_code": "CUST-SKU001",
+  "pick_size": 1,
+  "pack_size": 12,
+  "cost": 10.5,
+  "selling": 15.0,
+  "msrp": 19.99,
   "active": true,
   "uom": [
     {
       "unit": "EACH",
       "qty": 1,
-      "is_base": true
+      "is_base": true,
+      "length": 0,
+      "width": 0,
+      "height": 0,
+      "gross_weight": 0.25,
+      "net_weight": 0.2
+    },
+    {
+      "unit": "CTN",
+      "qty": 24,
+      "is_base": false,
+      "length": 30,
+      "width": 20,
+      "height": 15,
+      "gross_weight": 6.0,
+      "net_weight": 4.8
     }
   ],
-  "custom_field": []
+  "custom_field": [
+    {
+      "name": "color",
+      "value": "red"
+    },
+    {
+      "name": "size",
+      "value": "M"
+    }
+  ]
 }
 ```
 
@@ -199,7 +247,7 @@ Content-Type: application/json
 ```json
 {
   "data": {
-    "client": "DEMOCLIENT",
+    "client_code": "DEMOCLIENT",
     "item_type": "STANDARD",
     "product_name": "Sample Product",
     "item_code": "SKU001",
@@ -316,9 +364,8 @@ All endpoints are relative to `{host}/api/`.
 | `row_no`                 | string | No       | Row identifier for error reporting.                                                                      |
 | `organization_code`      | string | **Yes**  | Organization/warehouse code. Must exist in system.                                                       |
 | `client_code`            | string | **Yes**  | Client code. Must exist under the organization.                                                          |
-| `vendor`                 | object | **Yes**  | Vendor (supplier) information (see below).                                                               |
+| `vendor_code`            | string | **Yes**  | Vendor (supplier) code. Must match an existing relation of type `VEND` for the client.                  |
 | `courier_code`           | string | No       | Courier code.                                                                                            |
-| `courier_name`           | string | No       | Courier display name (informational).                                                                    |
 | `client_reference`       | string | **Yes**  | Unique order reference from your system. Must not duplicate other active orders.                         |
 | `purchase_order`         | string | No       | Purchase order number.                                                                                   |
 | `estimated_arrival_date`| string | **Yes**  | Expected arrival date. Format: `DD-MM-YYYY` or `DD/MM/YYYY`.                                             |
@@ -328,23 +375,9 @@ All endpoints are relative to `{host}/api/`.
 | `billing`                | object | No       | Billing address (see Address Object). Uses vendor default if empty.                                      |
 | `remark`                 | string | No       | Order remark.                                                                                            |
 | `note_on_document`       | string | No       | Note to appear on documents.                                                                             |
-| `GR_number`             | string | No       | Goods Receipt number.                                                                                    |
-| `add_by`                 | string | No       | Added-by user/name from source system.                                                                   |
-| `sap_ref_no`            | string | No       | SAP reference number.                                                                                   |
 | `source`                 | string | No       | Source system identifier.                                                                                |
 | `external_id`           | string | No       | External system ID for correlation.                                                                      |
-| `dockey`                | string | No       | SAP document key.                                                                                        |
 | `order_line`            | array  | **Yes**  | Order line items. At least one line required.                                                            |
-
-**Vendor Object (`vendor`)**
-
-| Field       | Type   | Required | Description                                                                        |
-| ----------- | ------ | -------- | ---------------------------------------------------------------------------------- |
-| `code`      | string | **Yes**  | Vendor code — key for external system. Auto-created if not exists.                |
-| `name`      | string | No       | Vendor display name.                                                              |
-| `account`   | string | No       | Account code in external system.                                                 |
-| `email`     | string | No       | Vendor email.                                                                     |
-| `phone`     | string | No       | Vendor phone (e.g., `+(852)91234567`).                                            |
 
 **Address Object (`shipping` / `billing`)**
 
@@ -391,24 +424,37 @@ Content-Type: application/json
       "row_no": "1",
       "organization_code": "DEMO",
       "client_code": "DEMOCLIENT",
-      "vendor": {
-        "code": "VEND001",
-        "name": "Vendor Name",
-        "email": "vendor@example.com",
-        "phone": "+(852)91234567"
-      },
+      "vendor_code": "VEND001",
+      "courier_code": "DHL",
       "client_reference": "INB-2025-001",
       "purchase_order": "PO-12345",
       "estimated_arrival_date": "15-03-2025",
       "shipping": {
         "contact_name": "John Doe",
         "phone": "91234567",
+        "email": "john.doe@example.com",
         "address": "123 Warehouse St",
+        "district": "Kowloon",
         "city": "Hong Kong",
         "country": "HK",
+        "postal_code": "000000",
         "address_type": "B"
       },
-      "GR_number": "GR-000123",
+      "billing": {
+        "contact_name": "AP Dept",
+        "phone": "91230000",
+        "email": "ap@example.com",
+        "address": "456 Billing Rd",
+        "district": "Kowloon",
+        "city": "Hong Kong",
+        "country": "HK",
+        "postal_code": "000001",
+        "address_type": "B"
+      },
+      "remark": "Inbound from SAP",
+      "note_on_document": "Handle with care",
+      "source": "SAP",
+      "external_id": "EXT-INB-0001",
       "order_line": [
         {
           "row_no": "1",
@@ -416,7 +462,23 @@ Content-Type: application/json
           "qty": "100",
           "unit": "EACH",
           "exp_date": "31-12-2025",
-          "line_remark": ""
+          "lot_no": "LOT-001",
+          "serial_no": "",
+          "batch": "BATCH-001",
+          "warehouse_location_code": "MAIN-RCV",
+          "line_remark": "First line"
+        },
+        {
+          "row_no": "2",
+          "sku": "SKU002",
+          "qty": "50",
+          "unit": "CTN",
+          "exp_date": "",
+          "lot_no": "",
+          "serial_no": "",
+          "batch": "",
+          "warehouse_location_code": "",
+          "line_remark": "Second line"
         }
       ]
     }
@@ -483,7 +545,7 @@ Outbound order APIs manage **shipping** to customers.
 | `row_no`                  | string | No       | Row identifier for error messages.                                                          |
 | `organization_code`       | string | **Yes**  | Organization code.                                                                          |
 | `client_code`             | string | **Yes**  | Client code.                                                                                |
-| `customer`                | object | **Yes**  | Customer (relation) information (see below).                                                |
+| `customer_code`           | string | **Yes**  | Customer (relation) code. Must match an existing relation of type `CUST` for the client.   |
 | `courier_code`            | string | No       | Courier code.                                                                               |
 | `courier_name`            | string | No       | Courier display name (informational).                                                       |
 | `client_reference`        | string | **Yes**  | Unique order reference. Must not duplicate other active orders.                             |
@@ -498,15 +560,7 @@ Outbound order APIs manage **shipping** to customers.
 | `dockey`                  | string | No       | SAP document key.                                                                           |
 | `order_line`              | array  | **Yes**  | Order line items.                                                                           |
 
-**Customer Object (`customer`)**
-
-| Field   | Type   | Required | Description                                                              |
-| ------- | ------ | -------- | ------------------------------------------------------------------------ |
-| `code`  | string | **Yes**  | Customer code — key for external system. Auto-created if not exists.    |
-| `name`  | string | No       | Customer display name.                                                  |
-| `account`| string| No       | Account code.                                                            |
-| `email` | string | No       | Customer email.                                                         |
-| `phone` | string | No       | Customer phone.                                                         |
+**Note:** Customer name, account, email, and phone are managed in WMS Core master data and are not part of this API payload. Only `customer_code` is required here.
 
 **Address Object (`shipping` / `billing`)**
 
@@ -544,12 +598,7 @@ Content-Type: application/json
       "row_no": "1",
       "organization_code": "DEMO",
       "client_code": "DEMOCLIENT",
-      "customer": {
-        "code": "CUST001",
-        "name": "Customer Name",
-        "email": "customer@example.com",
-        "phone": "+(852)91234567"
-      },
+      "customer_code": "CUST001",
       "courier_code": "DHL",
       "courier_name": "DHL Express",
       "client_reference": "OUT-2025-001",
@@ -559,17 +608,51 @@ Content-Type: application/json
         "contact_name": "Jane Doe",
         "phone": "91234567",
         "address": "456 Delivery Ave",
+        "district": "Kowloon",
         "city": "Hong Kong",
         "country": "HK",
         "address_type": "B"
       },
+      "billing": {
+        "contact_name": "Billing Contact",
+        "phone": "91239999",
+        "email": "billing@example.com",
+        "address": "789 Billing Ave",
+        "district": "Kowloon",
+        "city": "Hong Kong",
+        "country": "HK",
+        "postal_code": "000002",
+        "address_type": "B"
+      },
+      "remark": "Outbound to customer",
+      "note_on_document": "Leave at reception",
+      "dockey": "SAP_DOC_KEY_456",
       "order_line": [
         {
           "row_no": "1",
           "sku": "SKU001",
           "qty": "50",
           "unit": "EACH",
-          "line_remark": ""
+          "bin_location": "FL-4F-1-1B",
+          "warehouse_location_code": "MAIN-SHIP",
+          "exp_date": "31-12-2025",
+          "lot_no": "LOT-001",
+          "serial_no": "",
+          "batch": "",
+          "line_remark": "First outbound line"
+        },
+        {
+          "row_no": "2",
+          "sku": "SKU002",
+          "qty": "10",
+          "unit": "CTN",
+          "bin_location": "",
+          "warehouse_location_code": "",
+          "exp_date": "",
+          "lot_no": "",
+          "serial_no": "",
+          "batch": "",
+          "line_remark": "Second outbound line"
         }
       ]
     }
